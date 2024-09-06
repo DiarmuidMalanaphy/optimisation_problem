@@ -10,7 +10,7 @@ def draw_maze(maze):
     pygame.init()
     
     # Define constants
-    cell_size = 10  # Size of each cell in pixels
+    cell_size = 3  # Size of each cell in pixels
     width, height = len(maze[0]), len(maze)
     screen_width, screen_height = width * cell_size, height * cell_size
     

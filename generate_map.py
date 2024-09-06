@@ -34,7 +34,7 @@ def generate_maze(width, height):
             stack.pop()
     
     # Randomly open up more spaces
-    for _ in range(width * height // 4):
+    for _ in range(width * height // 2):
         x, y = random.randint(1, height - 2), random.randint(1, width - 2)
         if maze[x][y] == 1:
             maze[x][y] = 0
