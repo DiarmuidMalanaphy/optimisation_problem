@@ -33,12 +33,33 @@ def generate_maze(width, height):
         else:
             stack.pop()
     
-    # Randomly open up more spaces
-    for _ in range(width * height // 2):
-        x, y = random.randint(1, height - 2), random.randint(1, width - 2)
-        if maze[x][y] == 1:
-            maze[x][y] = 0
+    # Increase open spaces significantly
+    open_space_ratio = 0.6  # 60% of the maze will be open space
+    total_cells = width * height
+    num_open_spaces = int(total_cells * open_space_ratio)
     
+    # Randomly open up more spaces
+    open_cells = [(x, y) for x in range(1, height - 1) for y in range(1, width - 1) if maze[x][y] == 1]
+    random.shuffle(open_cells)
+    
+    for i in range(num_open_spaces):
+        if i >= len(open_cells):
+            break
+        x, y = open_cells[i]
+        maze[x][y] = 0
+    
+    # Ensure the end goal is fully accessible
+    def make_end_accessible(maze, end):
+        ex, ey = end
+        # Check and clear surrounding cells if they are walls
+        for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            nx, ny = ex + dx, ey + dy
+            if 0 < nx < height - 1 and 0 < ny < width - 1:
+                if maze[nx][ny] == 1:
+                    maze[nx][ny] = 0
+
+    make_end_accessible(maze, end)
+
     return maze
 
 def save_maze_to_file(maze, filename):
