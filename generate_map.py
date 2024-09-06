@@ -1,4 +1,5 @@
 import random
+import json
 
 def generate_maze(width, height):
     # Initialize maze with walls
@@ -40,13 +41,16 @@ def generate_maze(width, height):
     
     return maze
 
-def print_maze(maze):
-    for row in maze:
-        print(''.join(str(cell) for cell in row))
+def save_maze_to_file(maze, filename):
+    with open(filename, 'w') as file:
+        json.dump(maze, file)
 
 # Define the size of the maze
 width, height = 200, 70
 
-# Generate and print the maze
+# Generate the maze
 maze = generate_maze(width, height)
-print_maze(maze)
+
+# Save the maze to a file
+save_maze_to_file(maze, 'maze.json')
+
