@@ -9,29 +9,36 @@ def generate_maze(width, height):
     start = (1, 1)
     end = (height - 2, width - 2)
     
+    # Create a path from start to end
+    current = start
+    stack = [current]
+    visited = set([current])
+    
+    while current != end:
+        x, y = current
+        neighbors = [(x+dx, y+dy) for dx, dy in [(-1,0), (1,0), (0,-1), (0,1)]
+                     if 0 < x+dx < height-1 and 0 < y+dy < width-1 and (x+dx, y+dy) not in visited]
+        
+        if neighbors:
+            next_cell = random.choice(neighbors)
+            stack.append(next_cell)
+            visited.add(next_cell)
+            maze[next_cell[0]][next_cell[1]] = 0
+            current = next_cell
+        elif stack:
+            current = stack.pop()
+        else:
+            break  # This should not happen if the maze is solvable
+    
     # Mark start and end points
     maze[start[0]][start[1]] = 0
     maze[end[0]][end[1]] = 2
     
-    # Define the probability of a cell being an open space
-    probability_of_open_space = 0.5  # 50% chance to be an open space
-    
+    # Add some random open spaces
     for x in range(1, height - 1):
         for y in range(1, width - 1):
-            if (x, y) != start and (x, y) != end:
-                if random.random() < probability_of_open_space:
-                    maze[x][y] = 0
-
-    # Ensure the end goal is fully accessible
-    def make_end_accessible(maze, end):
-        ex, ey = end
-        # Ensure that the end goal is surrounded by open cells
-        for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-            nx, ny = ex + dx, ey + dy
-            if 0 < nx < height - 1 and 0 < ny < width - 1:
-                maze[nx][ny] = 0
-    
-    make_end_accessible(maze, end)
+            if (x, y) not in visited and random.random() < 0.3:  # 30% chance to be an open space
+                maze[x][y] = 0
     
     return maze
 
@@ -39,12 +46,6 @@ def save_maze_to_file(maze, filename):
     with open(filename, 'w') as file:
         json.dump(maze, file)
 
-# Define the size of the maze
-width, height = 200, 70
-
-# Generate the maze
-maze = generate_maze(width, height)
-
-# Save the maze to a file
+# Example usage
+maze = generate_maze(200, 200)
 save_maze_to_file(maze, 'maze.json')
-
