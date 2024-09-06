@@ -2,39 +2,51 @@ import random
 import json
 
 def generate_maze(width, height):
-    # Initialize maze with walls
-    maze = [[1 for _ in range(width)] for _ in range(height)]
+    # Initialize maze with walls (1s)
+    maze = [[1] * width for _ in range(height)]
     
-    # Define the start point and end point
-    start = (1, 1)
-    end = (height - 2, width - 2)
+    # Define start and end points
+    start = (0, 0)
+    end = (height - 1, width - 1)
     
-    # Initialize the stack with the start point
-    stack = [start]
-    maze[start[0]][start[1]] = 0  # Mark start as path
-
-    while stack:
-        current = stack[-1]
-        x, y = current
-
-        # Possible directions: right, down, left, up
-        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
-        random.shuffle(directions)  # Randomize direction order
+    # Set start point as path (0)
+    x, y = start
+    maze[x][y] = 0
+    
+    while (x, y) != end:
+        # Possible moves
+        moves = []
+        if x < end[0]:  # Can move down
+            moves.append((1, 0))
+        if y < end[1]:  # Can move right
+            moves.append((0, 1))
         
-        for dx, dy in directions:
-            nx, ny = x + dx, y + dy
-            if 0 < nx < height - 1 and 0 < ny < width - 1 and maze[nx][ny] == 1:
-                maze[nx][ny] = 0  # Mark as path
-                stack.append((nx, ny))
-                break
-        else:
-            # If no valid move, backtrack
-            stack.pop()
-        # Optional: Break if we've reached the end
-        if current == end:
+        # Add moves left and up with a 10% chance if they are valid
+        if x > 0:  # Can move up
+            if random.random() < 0.1:  # 10% chance
+                moves.append((-1, 0))
+        if y > 0:  # Can move left
+            if random.random() < 0.1:  # 10% chance
+                moves.append((0, -1))
+        
+        # If there are no valid moves, we are stuck, so backtrack
+        if not moves:
             break
-    # Ensure the end point is marked
-    maze[end[0]][end[1]] = 2
+        
+        # Randomly choose a move
+        dx, dy = random.choice(moves)
+        x += dx
+        y += dy
+        
+        # Ensure the new position is within bounds
+        if 0 <= x < height and 0 <= y < width:
+            # Mark the path
+            maze[x][y] = 0
+        else:
+            # If out of bounds, revert the move
+            x -= dx
+            y -= dy
+
     return maze
 
 def print_maze(maze):
