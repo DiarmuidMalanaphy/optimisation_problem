@@ -9,37 +9,30 @@ def generate_maze(width, height):
     start = (1, 1)
     end = (height - 2, width - 2)
     
-    # Create a path from start to end
+    # Create a random path from start to end
     current = start
-    stack = [current]
-    visited = set([current])
-    
+    maze[start[0]][start[1]] = 0  # Mark start as path
+
     while current != end:
         x, y = current
-        neighbors = [(x+dx, y+dy) for dx, dy in [(-1,0), (1,0), (0,-1), (0,1)]
-                     if 0 < x+dx < height-1 and 0 < y+dy < width-1 and (x+dx, y+dy) not in visited]
+        # Possible directions: right, down, left, up
+        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+        random.shuffle(directions)  # Randomize direction order
         
-        if neighbors:
-            next_cell = random.choice(neighbors)
-            stack.append(next_cell)
-            visited.add(next_cell)
-            maze[next_cell[0]][next_cell[1]] = 0
-            current = next_cell
-        elif stack:
-            current = stack.pop()
+        for dx, dy in directions:
+            nx, ny = x + dx, y + dy
+            if 0 < nx < height - 1 and 0 < ny < width - 1 and maze[nx][ny] == 1:
+                maze[nx][ny] = 0  # Mark as path
+                current = (nx, ny)
+                break
         else:
-            break  # This should not happen if the maze is solvable
-    
-    # Mark start and end points
-    maze[start[0]][start[1]] = 0
+            # If no valid move, backtrack (this shouldn't happen in a proper implementation)
+            print("Error: No valid move found. This shouldn't happen.")
+            return None
+
+    # Mark end point
     maze[end[0]][end[1]] = 2
-    
-    # Add some random open spaces
-    for x in range(1, height - 1):
-        for y in range(1, width - 1):
-            if (x, y) not in visited and random.random() < 0.3:  # 30% chance to be an open space
-                maze[x][y] = 0
-    
+
     return maze
 
 def save_maze_to_file(maze, filename):
@@ -47,5 +40,10 @@ def save_maze_to_file(maze, filename):
         json.dump(maze, file)
 
 # Example usage
-maze = generate_maze(200, 200)
-save_maze_to_file(maze, 'maze.json')
+maze = generate_maze(20, 20)
+if maze:
+    save_maze_to_file(maze, 'maze.json')
+    print("Maze generated and saved successfully.")
+else:
+    print("Failed to generate maze.")
+
