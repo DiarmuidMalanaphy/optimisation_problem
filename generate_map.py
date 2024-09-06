@@ -13,23 +13,18 @@ def generate_maze(width, height):
     current = start
     maze[start[0]][start[1]] = 0  # Mark start as path
 
+    directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
     while current != end:
         x, y = current
         # Possible directions: right, down, left, up
-        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
-        random.shuffle(directions)  # Randomize direction order
-        
-        for dx, dy in directions:
-            nx, ny = x + dx, y + dy
-            if 0 < nx < height - 1 and 0 < ny < width - 1 and maze[nx][ny] == 1:
-                maze[nx][ny] = 0  # Mark as path
-                current = (nx, ny)
-                break
-        else:
-            # If no valid move, backtrack (this shouldn't happen in a proper implementation)
-            print("Error: No valid move found. This shouldn't happen.")
-            return None
+        direction = random.choice(directions)
 
+        dx, dy = direction
+        nx, ny = x + dx, y + dy
+        if 0 < nx < height - 1 and 0 < ny < width - 1 and maze[nx][ny] == 1:
+            maze[nx][ny] = 0  # Mark as path
+            current = (nx, ny)
+            break
     # Mark end point
     maze[end[0]][end[1]] = 2
 
